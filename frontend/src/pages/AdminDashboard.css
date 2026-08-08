@@ -186,7 +186,7 @@ button:hover {
 }
 
 /* Mobile */
-
+  
 @media (max-width: 900px) {
 
   .sidebar {
@@ -202,4 +202,4 @@ button:hover {
   .cards {
     grid-template-columns: 1fr;
   }
-}
+} 
