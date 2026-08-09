@@ -1,75 +1,55 @@
-import {useState} from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-function Login(){
+  const navigate = useNavigate();
 
-const [email,setEmail]=useState("");
-const [password,setPassword]=useState("");
+  const login = async (e) => {
+    e.preventDefault();
 
+    try {
+      const res = await api.post("/admin/login", {
+        email,
+        password,
+      });
 
-const login=async(e)=>{
+      alert(res.data.message);
 
-e.preventDefault();
+      localStorage.setItem("admin", "true");
 
-try{
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+      alert("Login Failed");
+    }
+  };
 
-const res=await api.post("/admin/login",{
-email,
-password
-});
+  return (
+    <div>
+      <h2>Admin Login</h2>
 
+      <form onSubmit={login}>
+        <input
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-alert(res.data.message);
+        <input
+          placeholder="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-localStorage.setItem("admin",true);
-
-window.location.href="/dashboard";
-
-
-}catch(error){
-
-alert("Login Failed");
-
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
 }
-
-};
-
-
-return(
-
-<div>
-
-<h2>Admin Login</h2>
-
-
-<form onSubmit={login}>
-
-<input
-placeholder="Email"
-onChange={(e)=>setEmail(e.target.value)}
-/>
-
-
-<input
-placeholder="Password"
-type="password"
-onChange={(e)=>setPassword(e.target.value)}
-/>
-
-
-<button>
-Login
-</button>
-
-
-</form>
-
-</div>
-
-)
-
-}
-
 
 export default Login;
