@@ -4,82 +4,81 @@ import { QRCodeCanvas } from "qrcode.react";
 import api from "../services/api";
 import "./VisitorPass.css";
 
+function VisitorPass() {
+  const { id } = useParams();
+  const [visitor, setVisitor] = useState(null);
+  const [error, setError] = useState("");
 
-function VisitorPass(){
+  useEffect(() => {
+    getVisitor();
+  }, [id]);
 
-const {id}=useParams();
+  const getVisitor = async () => {
+    try {
+      const res = await api.get(`/visitors/${id}`);
+      setVisitor(res.data);
+    } catch (error) {
+      console.log(error);
+      setError("Unable to load visitor pass");
+    }
+  };
 
-const [visitor,setVisitor]=useState(null);
+  if (error) {
+    return <h2>{error}</h2>;
+  }
 
+  if (!visitor) {
+    return <h2>Loading Visitor Pass...</h2>;
+  }
 
-useEffect(()=>{
- getVisitor();
-},[]);
+  return (
+    <div className="pass-page">
+      <div className="visitor-pass">
+        <h1>Visitor Pass</h1>
 
+        <p>
+          <strong>Visitor:</strong> {visitor.visitorName}
+        </p>
 
-const getVisitor=async()=>{
+        <p>
+          <strong>Phone:</strong> {visitor.phone}
+        </p>
 
- const res=await api.get(`/visitors/${id}`);
+        <p>
+          <strong>Employee:</strong> {visitor.employeeName}
+        </p>
 
- setVisitor(res.data);
+        <p>
+          <strong>Visit Date:</strong>{" "}
+          {new Date(visitor.visitDate).toLocaleDateString()}
+        </p>
 
-};
+        <p>
+          <strong>Arrival Time:</strong>{" "}
+          {visitor.expectedArrivalTime}
+        </p>
 
+        <p>
+          <strong>Purpose:</strong> {visitor.purpose}
+        </p>
 
-if(!visitor){
- return <h2>Loading...</h2>
+        <p>
+          <strong>Status:</strong> {visitor.status}
+        </p>
+
+        <div className="qr">
+          <QRCodeCanvas
+            value={visitor._id}
+            size={180}
+          />
+        </div>
+
+        <button onClick={() => window.print()}>
+          Print Pass
+        </button>
+      </div>
+    </div>
+  );
 }
-
-
-return(
-
-<div className="pass-card">
-
-<h1>VISITOR PASS</h1>
-
-<hr/>
-
-<h2>{visitor.name}</h2>
-
-<p>Phone: {visitor.phone}</p>
-
-<p>Purpose: {visitor.purpose}</p>
-
-<p>Meet: {visitor.whomToMeet}</p>
-
-<p>
-Status: {visitor.status}
-</p>
-
-
-<QRCodeCanvas
-value={visitor._id}
-size={150}
-/>
-
-
-<p>
-Pass ID:
-</p>
-
-<small>
-{visitor._id}
-</small>
-
-
-<br/><br/>
-
-
-<button onClick={()=>window.print()}>
-Print Pass
-</button>
-
-
-</div>
-
-)
-
-}
-
 
 export default VisitorPass;

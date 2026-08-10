@@ -11,42 +11,111 @@ function Login() {
   const login = async (e) => {
     e.preventDefault();
 
+    if (!email || !password) {
+      alert("Please enter email and password");
+      return;
+    }
+
     try {
-      const res = await api.post("/admin/login", {
+      const res = await api.post("/users/login", {
         email,
         password,
       });
 
-      alert(res.data.message);
+      const { token, user } = res.data;
 
-      localStorage.setItem("admin", "true");
+      // Check logged-in user role
+      console.log("LOGIN USER:", user);
+      console.log("USER ROLE:", user.role);
 
-      navigate("/dashboard");
+      // Save login data
+      localStorage.setItem("token", token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
+      alert("Login successful");
+
+      // Role based navigation
+      if (user.role === "admin") {
+        navigate("/dashboard");
+      } else if (user.role === "receptionist") {
+        navigate("/receptionist");
+      } else if (user.role === "employee") {
+        navigate("/employee");
+      } else {
+        alert("Invalid user role");
+      }
     } catch (error) {
       console.log(error);
-      alert("Login Failed");
+
+      alert(
+        error.response?.data?.message ||
+          "Login Failed"
+      );
     }
   };
 
   return (
-    <div>
-      <h2>Admin Login</h2>
+    <div
+      style={{
+        maxWidth: "400px",
+        margin: "80px auto",
+        padding: "30px",
+        border: "1px solid #ddd",
+        borderRadius: "10px",
+      }}
+    >
+      <h1>Visitor Pass Management</h1>
+
+      <h2>Login</h2>
 
       <form onSubmit={login}>
         <input
+          type="email"
           placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) =>
+            setEmail(e.target.value)
+          }
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "15px",
+            boxSizing: "border-box",
+          }}
         />
 
         <input
-          placeholder="Password"
           type="password"
+          placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) =>
+            setPassword(e.target.value)
+          }
+          style={{
+            width: "100%",
+            padding: "10px",
+            marginBottom: "15px",
+            boxSizing: "border-box",
+          }}
         />
 
-        <button type="submit">Login</button>
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: "10px",
+            background: "#111827",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+          }}
+        >
+          Login
+        </button>
       </form>
     </div>
   );
