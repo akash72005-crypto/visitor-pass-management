@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const visitorRoutes = require("./routes/visitorRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
   res.send("Visitor Pass Management System API Running...");
 });
 
+app.use("/api/users", userRoutes);
 app.use("/api/visitors", visitorRoutes);
 app.use("/api/admin", adminRoutes);
 
